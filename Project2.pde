@@ -1,4 +1,5 @@
 import controlP5.*;
+boolean start = false;
 ControlP5 cp5;
 DropdownList shapes;
 Slider step;
@@ -10,15 +11,116 @@ Toggle terrain;
 Toggle useStroke;
 Toggle useRandomSeed;
 Textfield seedValue;
-int x;
-int y;
+RandomWalk path = null;
 String[] shapeTypes = new String[]{"SQUARES", "HEXAGONS"};
+
+
+abstract class RandomWalk {
+  int numSteps;
+  int stepsTaken;
+  int stepDistance;
+  float stepScale;
+  int minHor;
+  int minVert;
+  int maxHor;
+  int maxVert;
+  int currX;
+  int currY;
+  boolean useColor;
+  boolean useStroke;
+  HashMap<PVector, Integer> visited; 
+  RandomWalk(int numSteps, int stepDistance, float stepScale, int minHor, int minVert, int maxHor, int maxVert, boolean useColor, boolean useStroke){
+    this.numSteps = numSteps;
+    this.stepsTaken = 0;
+    this.stepDistance = stepDistance;
+    this.stepScale = stepScale;
+    this.minHor = minHor;
+    this.minVert = minVert;
+    this.maxHor = maxHor;
+    this.maxVert = maxVert;
+    this.currX = maxHor/2;
+    this.currY = maxVert/2;
+    this.useColor = useColor;
+    this.useStroke = useStroke;
+  }
+  abstract void Update();
+  abstract void Draw(int direction);
+}
+
+class SquareWalk extends RandomWalk {
+  
+  SquareWalk(int numSteps, int stepDistance, float stepScale, int minHor, int minVert, int maxHor, int maxVert, boolean useColor, boolean useStroke){
+    super(numSteps,stepDistance,stepScale,minHor, minVert, maxHor, maxVert, useColor,useStroke);
+  }
+  
+  void Draw(int direction){
+    fill(167,100,200);
+    square(currX, currY, stepDistance*stepScale);
+    int returnVal = visited.putIfAbsent(new PVector(currX, currY), 0);
+    if(returnVal != 0)
+       visited.put(new PVector(currX, currY), returnVal+1);
+  }
+  
+  void Update(){
+    boolean pickDirection = true;
+    int direction = 0;
+    while(pickDirection){
+      direction = int(random(0,4));
+      switch (direction){
+        case 0:
+          if(currY + this.stepDistance*stepScale < height){
+             currY += this.stepDistance*stepScale;
+             pickDirection = false;
+          }
+        break;
+        case 2: 
+          if(currY - this.stepDistance*stepScale  > 0){ 
+            currY -= this.stepDistance*stepScale;
+            pickDirection = false;
+         }
+         break;
+        case 1: 
+          if(currX + this.stepDistance*stepScale  < width){
+            currX += this.stepDistance*stepScale;
+           pickDirection = false;
+          }
+         break;
+      case 3: 
+        if(currX - this.stepDistance*stepScale  > 0){
+           currX -= this.stepDistance*stepScale;
+           pickDirection = false;
+        }
+        break;
+      }
+    }
+    this.Draw(direction);
+  }
+  
+ 
+}
+
+class HexWalk extends RandomWalk {
+  
+  HexWalk(int numSteps, int stepDistance, float stepScale, int minHor, int minVert, int maxHor, int maxVert, boolean useColor, boolean useStroke){
+    super(numSteps,stepDistance,stepScale, minHor, minVert, maxHor,maxVert, useColor,useStroke);
+  }
+  
+  void Draw(int direction){
+     
+    
+  }
+    
+  
+  void Update(){
+    
+  }
+  
+ 
+}
 
 void setup(){
   cp5 = new ControlP5(this);       
   size(1200, 800);
-  x = width/2;
-  y = height/2;
   cp5.addButton("start")
        .setValue(0)
       .setPosition(20,20)
@@ -116,7 +218,9 @@ void setup(){
 void draw() {
   fill(153);
   rect(0,0,200, 800);
-  
+  if(start){
+    
+  }
 }
 
 void controlEvent(ControlEvent theEvent) {
@@ -131,10 +235,13 @@ void controlEvent(ControlEvent theEvent) {
     println("event from group : "+theEvent.getGroup().getValue()+" from "+theEvent.getGroup());
   } 
   else if (theEvent.isController()) {
-    println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
+    println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController().getLabel());
   }
 }
 
 public void start(int value){
+  //TODO add in controller values and assigning them to the path object value
+  //seed random value with the random thing
   println(shapes.getValue());
+  start = true;
 }
