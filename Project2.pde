@@ -33,16 +33,17 @@ abstract class RandomWalk {
   HashMap<PVector, Integer> visited = new HashMap<PVector, Integer>(); 
   RandomWalk(int numSteps, int stepDistance, float stepScale, int minHor, int minVert, int maxHor, int maxVert,boolean constrain, boolean terrain,boolean useStroke){
     
+    //the +2 is as padding on the sides
     this.numSteps = numSteps;
     this.stepsTaken = 0;
     this.stepDistance = stepDistance;
     this.stepScale = stepScale;
-    this.minHor = minHor;
-    this.minVert = minVert;
+    this.minHor = minHor+2;
+    this.minVert = minVert+2;
     this.maxHor = maxHor;
     this.maxVert = maxVert;
-    this.currX = maxHor/2 + minHor/2;
-    this.currY = maxVert/2;
+    this.currX = this.maxHor/2 + this.minHor/2;
+    this.currY = this.maxVert/2;
     this.constrain = constrain;
     this.terrain = terrain;
     this.useStroke = useStroke;
@@ -87,7 +88,7 @@ class SquareWalk extends RandomWalk {
     else {
       stroke(0);
     }
-    square(currX, currY, int(stepDistance*stepScale));
+    square(currX, currY, int(stepDistance));
     switch (direction){
             case 0:
                  currY += this.stepDistance*stepScale;
@@ -118,22 +119,22 @@ class SquareWalk extends RandomWalk {
       //change this
           switch (direction){
             case 0:
-              if(currY + this.stepDistance*1.5 < height || (!constrain) ){
+              if(currY + (this.stepDistance*1.5*stepScale)  < height || (!constrain) ){
                  pickDirection = false;
               }
             break;
             case 2: 
-              if(currY - this.stepDistance*1.5  > minVert ||(!constrain) ){ 
+              if(currY - (this.stepDistance*1.5*stepScale)   > minVert ||(!constrain) ){ 
                 pickDirection = false;
              }
              break;
             case 1: 
-              if(currX + this.stepDistance*1.5  < width ||(!constrain) ){
+              if(currX + (this.stepDistance*1.5*stepScale)   < width ||(!constrain) ){
                pickDirection = false;
               }
              break;
           case 3: 
-            if(currX - this.stepDistance*1.5 > minHor ||(!constrain) ){
+            if(currX - (this.stepDistance*1.5*stepScale)  > minHor ||(!constrain) ){
                pickDirection = false;
             }
             break;
@@ -257,33 +258,33 @@ class HexWalk extends RandomWalk {
       }
       switch (direction){
         case 0 : 
-          currY += southEast.y;
-          currX += southEast.x;
+          currY += southEast.y*stepScale;
+          currX += southEast.x*stepScale;
           break;
           
         case 1 :
-          currY += south.y;
-          currX += south.x;
+          currY += south.y*stepScale;
+          currX += south.x*stepScale;
           break;
           
         case 2 :
-          currY += southWest.y;
-          currX += southWest.x;
+          currY += southWest.y*stepScale;
+          currX += southWest.x*stepScale;
           break;
           
         case 3 :
-          currY += northWest.y;
-          currX += northWest.x;
+          currY += northWest.y*stepScale;
+          currX += northWest.x*stepScale;
           break;
           
         case 4 :
-          currY += north.y;
-          currX += north.x;
+          currY += north.y*stepScale;
+          currX += north.x*stepScale;
           break;
           
         case 5 :
-          currY += northEast.y;
-          currX += northEast.x;
+          currY += northEast.y*stepScale;
+          currX += northEast.x*stepScale;
           break;
       }
       stepsTaken++;
@@ -301,32 +302,32 @@ class HexWalk extends RandomWalk {
         //change this
             switch (direction){
               case 0:
-                if(((currY + southEast.y*1.5) < maxVert && (currX + southEast.x*1.5)  < maxHor )|| (!constrain) ){
+                if(((currY + southEast.y*2*stepScale) < maxVert && (currX + southEast.x*1.8*stepScale)  < maxHor )|| (!constrain) ){
                    pickDirection = false;
                 }
               break;
               case 1: 
-                if(((currY + south.y*1.5)  < maxVert) ||(!constrain) ){ 
+                if(((currY + south.y*2*stepScale)  < maxVert) ||(!constrain) ){ 
                   pickDirection = false;
                 }
                break;
               case 2: 
-                if(((currY + southWest.y*1.5) < maxVert && (currX + southWest.x*1.5 ) > minHor)||(!constrain) ){
+                if(((currY + southWest.y*2*stepScale) < maxVert && (currX + southWest.x*1.8*stepScale) > minHor)||(!constrain) ){
                    pickDirection = false;
                 }
                break;
             case 3: 
-                if(((currY + northWest.y*1.5)  > minVert && (currX+northWest.x*1.5)  > minHor)||(!constrain) ){
+                if(((currY + northWest.y*2*stepScale)  > minVert && (currX+northWest.x*1.8*stepScale)  > minHor)||(!constrain) ){
                    pickDirection = false;
                 }
               break;
             case 4: 
-                if(((currY + north.y*1.5)  > minVert)||(!constrain) ){
+                if(((currY + north.y*2*stepScale)  > minVert)||(!constrain) ){
                    pickDirection = false;
                 }
               break;
             case 5:
-                if(((currY + northEast.y*1.5 ) > minVert && (currX + northEast.x*1.5)  < maxHor)||(!constrain) ){
+                if(((currY + northEast.y*2*stepScale ) > minVert && (currX + northEast.x*1.8*stepScale)  < maxHor)||(!constrain) ){
                    pickDirection = false;
                 }
               break;
